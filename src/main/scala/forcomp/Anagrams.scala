@@ -34,7 +34,7 @@ object Anagrams {
    *  same character, and are represented as a lowercase character in the occurrence list.
    */
   def wordOccurrences(w: Word): Occurrences =
-    w.toLowerCase.groupBy(c => c).map{case(char, charRepetition) => char -> charRepetition.length}.toList.sortBy(_._1)
+    w.toLowerCase.groupBy(identity).mapValues(_.length).toList.sortBy(_._1)
 
   /** Converts a sentence into its character occurrence list. */
   def sentenceOccurrences(s: Sentence): Occurrences = wordOccurrences(s.flatten.mkString)
@@ -158,6 +158,19 @@ object Anagrams {
    *
    *  Note: There is only one anagram of an empty sentence.
    */
-  def sentenceAnagrams(sentence: Sentence): List[Sentence] = ???
+  def sentenceAnagrams(sentence: Sentence): List[Sentence] =
+    sentenceAnagrams(sentenceOccurrences(sentence))
+
+
+  private def sentenceAnagrams(allOccurrences: Occurrences): List[Sentence] =
+    if (allOccurrences.isEmpty) List(Nil)
+  else
+    for {
+      curCombination <- combinations(allOccurrences)
+      if dictionaryByOccurrences.contains(curCombination)
+      curWord <- dictionaryByOccurrences(curCombination)
+      restOfSentence <- sentenceAnagrams(subtract(allOccurrences, curCombination))
+    } yield curWord +: restOfSentence
+
 
 }

@@ -19,7 +19,7 @@ class AnagramsSuite extends FunSuite {
   }
 
 
-  ignore("wordOccurrences: abcd") {
+  test("wordOccurrences: abcd") {
     assert(wordOccurrences("abcd") === List(('a', 1), ('b', 1), ('c', 1), ('d', 1)))
   }
 

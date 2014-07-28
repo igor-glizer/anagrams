@@ -54,7 +54,7 @@ object Anagrams {
    *    List(('a', 1), ('e', 1), ('t', 1)) -> Seq("ate", "eat", "tea")
    *
    */
-  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = loadDictionary.groupBy(wordOccurrences)
+  lazy val dictionaryByOccurrences: Map[Occurrences, List[Word]] = dictionary.groupBy(wordOccurrences)
 
   /** Returns all the anagrams of a given word. */
   def wordAnagrams(word: Word): List[Word] = if (word.isEmpty) List.empty else dictionaryByOccurrences(wordOccurrences(word))
@@ -100,10 +100,26 @@ object Anagrams {
    *  Note: the resulting value is an occurrence - meaning it is sorted
    *  and has no zero-entries.
    */
-  def subtract(x: Occurrences, y: Occurrences): Occurrences = x
+  def subtract(x: Occurrences, y: Occurrences): Occurrences = {
+    val yMap = y.toMap
+    x.foldLeft(x.toMap){(curMap, curOccurrence) =>
+    {
+      val char = curOccurrence._1
+      if (yMap.contains(char)) {
+        val xNum = curOccurrence._2
+        val yNum = yMap(char)
+        if (xNum == yNum)
+          curMap - char
+        else
+          curMap.updated(char, xNum - yNum)
+      }
+      else curMap
+    } }.toList
+  }
+
 
   /** Returns a list of all anagram sentences of the given sentence.
-   *  
+   *
    *  An anagram of a sentence is formed by taking the occurrences of all the characters of
    *  all the words in the sentence, and producing all possible combinations of words with those characters,
    *  such that the words have to be from the dictionary.

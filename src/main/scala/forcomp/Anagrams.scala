@@ -102,11 +102,9 @@ object Anagrams {
    */
   def subtract(x: Occurrences, y: Occurrences): Occurrences = {
     val yMap = y.toMap
-    x.foldLeft(x.toMap){(curMap, curOccurrence) =>
+    x.foldLeft(x.toMap){case (curMap, (char, xNum)) =>
     {
-      val char = curOccurrence._1
       if (yMap.contains(char)) {
-        val xNum = curOccurrence._2
         val yNum = yMap(char)
         if (xNum == yNum)
           curMap - char
